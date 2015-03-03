@@ -10,7 +10,7 @@ class UsersController < ApplicationController
 	end
 
 	def dashboard
-		@dash = User.get_dash(current_user.id)
+		@user = show
 	end
 
 	def get_info
