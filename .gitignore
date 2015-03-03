@@ -11,3 +11,9 @@
 /log/*
 !/log/.keep
 /tmp
+
+#ignore all key files
+*key.yml
+
+#ignore this file
+.gitignore

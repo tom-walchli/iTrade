@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -53,4 +54,14 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+  root 'users#dashboard'
+
+#  get '/users/:id/get_info'    => 'users#get_info'
+
+  resources :users do
+    resources   :wallets
+    resources   :trades
+    resources   :dashboard
+  end
+
 end

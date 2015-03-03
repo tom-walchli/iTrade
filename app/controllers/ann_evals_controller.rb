@@ -1,0 +1,2 @@
+class AnnEvalsController < ApplicationController
+end
