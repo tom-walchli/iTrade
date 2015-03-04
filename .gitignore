@@ -13,7 +13,7 @@
 /tmp
 
 #ignore all key files
-*key.yml
+*key.*
 
 #ignore this file
 .gitignore

@@ -62,6 +62,7 @@ Rails.application.routes.draw do
     resources   :wallets
     resources   :trades
     resources   :dashboard
+    resources   :decisions
   end
 
 end
