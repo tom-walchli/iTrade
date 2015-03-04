@@ -59,18 +59,18 @@ class AnnEval < ActiveRecord::Base
 			sell = true
 		end
 
-		buy_confidence  = r['10']['t_buy_100']     	
+		buy_confidence  = (r['10']['t_buy_100']     	
 						+ r['60']['t_buy_101'] 	 
 						+ r['600']['t_buy_102']  
 						+ r['1800']['t_buy_102'] 
-						+ r['3600']['t_buy_102']  # float between 0 and 5
+						+ r['3600']['t_buy_102']) / 5  # float between 0 and 1
 
 
-		sell_confidence = r['10']['t_sell_100']  
+		sell_confidence = (r['10']['t_sell_100']  
 						+ r['60']['t_sell_99'] 	 
 						+ r['600']['t_sell_98']  	
 						+ r['1800']['t_sell_98'] 	
-						+ r['3600']['t_sell_98']  # float between 0 and 5	
+						+ r['3600']['t_sell_98']) / 5  # float between 0 and 1	
 
 		update_attributes(
 			  :buy => buy,

@@ -1,29 +1,23 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 
-// $(document).ready(function (event){
-// 	kickoff();
-// });
+var beating = false;
+$(document).ready(function (event){
+	beating = true
+	heartbeat();
+});
 
-// var running = false;
-// function kickoff(){
-// 	if (!running){
-// 		running = true;
-// 		keepRunning();
-// 	}
-// }
+function heartbeat(){
+	keepAlive()
+	setTimeout(function(){
+		heartbeat();
+	},6000);
+}
 
-// function keepRunning(){
-// 	setTimeout(function(){
-// 		requestLatestResult()
-// 		keepRunning();
-// 	},6000);
-// }
+function keepAlive(){
+	console.log("i'm alive!!!")
+	$.post('users/1/decisions')
+}
 
-// function requestLatestResult(){
-// 	url = "https://msmc-software.com/Arbit/abcd/latestResult.json";
-	// $.getJSON(url,function(result){
-	// 	console.log(result)
- //    });
-//}
+
 

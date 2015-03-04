@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150304000041) do
+ActiveRecord::Schema.define(version: 20150304050255) do
 
   create_table "ann_evals", force: :cascade do |t|
     t.text     "results"
@@ -24,6 +24,12 @@ ActiveRecord::Schema.define(version: 20150304000041) do
   end
 
   create_table "dashboards", force: :cascade do |t|
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "decisions", force: :cascade do |t|
     t.integer  "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -55,9 +61,11 @@ ActiveRecord::Schema.define(version: 20150304000041) do
     t.string   "status"
     t.string   "foreign_id"
     t.integer  "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
     t.string   "exchange"
+    t.float    "amount_available"
+    t.integer  "ann_eval_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -85,6 +93,7 @@ ActiveRecord::Schema.define(version: 20150304000041) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string   "exchange"
+    t.float    "on_hold"
   end
 
 end
