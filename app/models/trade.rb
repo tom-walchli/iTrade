@@ -9,7 +9,10 @@ class Trade < ActiveRecord::Base
 	self.inheritance_column = nil
 	
 	def self.open_orders()
-
+		btce_open = Btce::TradeAPI.new_from_keyfile.active_orders('btc_usd')
+		if btce_open['success'] == 1
+			where("status = 'placed'").each { |trd| trd.handle_open(btce_open) }
+		end
 	end
 
 #
@@ -105,7 +108,7 @@ class Trade < ActiveRecord::Base
 
 		rv = trd['return']
 		if trd['success'] == 1
-			parms = {:status => 'placed',:foreign_id => "#{rv['order_id']}"}
+			parms = {:status => 'placed',:foreign_id => "#{rv['order_id']}", :amount => @price_span[0][1]}
 			update_attributes(parms)
 
 			curr = (type == 'buy' ? 'usd' : 'btc')
@@ -119,5 +122,37 @@ class Trade < ActiveRecord::Base
 			parms = {:status => 'error',:foreign_id => "#{rv['order_id']}"}
 			update_attributes(parms)
 		end
+	end
+
+	def handle_open(btce_open)
+		btce_order = btce_open[foreign_id]
+		if !btce_order || btce_order == {}
+			has_filled()
+		elsif btce_order['timestamp_created'].seconds + 30.seconds < Time.new 
+			cancel_order()
+		elsif btce_order['amount'] < amount
+			partially_filled()
+		end 
+	end
+
+	def has_filled()
+		update_attribute(:status, 'filled')
+		Wallet.create_or_update(user.id)
+	end
+
+	def cancel_order()
+		btce_cancel = Btce::TradeAPI.new_from_keyfile.cancel_order(foreign_id.to_i)
+		if btce_cancel['success'] == 1
+			rv = btce_cancel['return']['funds']
+			Wallet.update_balance(user.id, 'usd',rv['usd'])
+			Wallet.update_balance(user.id, 'btc',rv['btc'])
+			update_attribute(:status , 'cancelled')
+		else 
+			update_attribute(:status , 'error_cancelling')
+		end
+	end
+
+	def partially_filled()
+		# leave that for later
 	end
 end
