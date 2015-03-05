@@ -80,7 +80,7 @@ test:
 #   production:
 #
 production:
-#  <<: *default
+  <<: *default
   url: <%= ENV['DATABASE_URL'] %>
   # database: itrade_production
   # username: itrade

@@ -15,5 +15,3 @@
 #ignore all key files
 *key.*
 
-#ignore this file
-.gitignore
