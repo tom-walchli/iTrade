@@ -2,10 +2,11 @@ class Wallet < ActiveRecord::Base
 	belongs_to :user
 
 	def self.create_or_update(uid)
-		info = JSON.parse(Btce::TradeAPI.new_from_keyfile.get_info.to_json)
+		info = Btce::TradeAPI.new_from_keyfile.get_info
+		puts "INFO: #{info}"
 		if info['success'] == 1
 			info['return']['funds'].each_key do |key|
-				if ['btc', 'usd'].find(key)
+				if ['btc', 'usd'].include?(key)
 					wallet = get_by_currency(uid,key)
 					bal = info['return']['funds'][key]
 					if wallet

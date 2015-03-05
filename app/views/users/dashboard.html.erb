@@ -1,18 +1,71 @@
+<p hidden="True" id="user_id"><%= @user.id %></p>
+
 <div class="row">
-	<div class="col-sm-2 left__bar">
+	<div class="col-sm-3 left__bar">
+		<div class="left__bar--header">
+			<p>Wallets:</p>
+		</div>
 		<table>
 			<% @user.wallets.each do |w| %>
 				<tr>
 					<td class="left__bar--currency"><%= w.currency.upcase %></td>
-					<td class="left__bar--balance"> <%= (w.balance * 1000).to_i.to_f / 1000 %></td>
+					<td id=<%="wallet_#{w.currency}" %> class="left__bar--balance"> 
+						<%= (w.balance * 1000).to_i.to_f / 1000 %>
+						<% if w.on_hold %>
+						<%= " | pending: #{w.on_hold}" %>
+						<% end %>
+					</td>
 				</tr>
 			<% end %> 
 		</table>
+		<div class="left__bar--header">
+			<p>Trades:</p>
+		</div>
+		<div class="left__bar--scrollable">
+			<table>
+				<% @user.trades.where('updated_at > ?', Time.now - 1.month).order('updated_at DESC').limit(50).each do |t| %>
+					<tr class="left__bar--trade_tr" id=<%= "trade_#{t.id}" %> >
+						<td class="left__bar--trade-type"><%= t.type %></td>
+						<td class="left__bar--amount"> 
+							<%= (t.amount * 1000).to_i.to_f / 1000 %>
+							at
+							<%= ((t.price || 0) * 1000).to_i.to_f / 1000 %>
+						</td>
+						<td>
+							<%= (Time.new - t.updated_at).minutes.to_i %>m ago
+						</td>
+					</tr>
+				<% end %> 
+			</table>
+		</div>
+
 	</div>
 
-	<div class="col-sm-10">
+	<div class="col-sm-6">
 		<h2><%= @user %></h2>
 		<h3>Here'll be all sophistication!!</h3>
+		<div id="playField" class="chart"></div>
+
+	</div>
+	<div class="col-sm-3 right__bar">
+		<button id="toggleBeating" class="btn btn-selected">Start</button>
+		<div><strong>Latest results:</strong></div>
+		<div class="result--item">
+			<span class="right__bar--item">Buy:</span>
+			<span class="result" id="js-buy__decision"></span>
+		</div>
+		<div class="result--item">
+			<span class="right__bar--item">Confidence:</span>
+			<span class="result" id="js-buy__confidence"></span>
+		</div>
+		<div class="result--item">
+			<span class="right__bar--item">Sell:</span>
+			<span class="result" id="js-sell__decision"></span>
+		</div>
+		<div class="result--item">
+			<span class="right__bar--item">Confidence:</span>
+			<span class="result" id="js-sell__confidence"></span>
+		</div>
 	</div>
 </div>
 

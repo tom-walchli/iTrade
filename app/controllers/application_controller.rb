@@ -3,7 +3,10 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(user)
     Wallet.create_or_update(user.id)
-    AnnEval.run()
+
+#    debug ann_eval model which runs in separate process as '$ rake ann_eval:do_stuff'
+#    AnnEval.run()
+
     signed_in_root_path(user)
   end
 

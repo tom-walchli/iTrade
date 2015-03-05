@@ -8,10 +8,11 @@ class Trade < ActiveRecord::Base
 	# allows to have a column called type
 	self.inheritance_column = nil
 	
-	def self.open_orders()
-		btce_open = Btce::TradeAPI.new_from_keyfile.active_orders('btc_usd')
+	def self.pending_trades()
+		btce_open = Btce::TradeAPI.new_from_keyfile.active_orders(['btc_usd'])
+		puts btce_open
 		if btce_open['success'] == 1
-			where("status = 'placed'").each { |trd| trd.handle_open(btce_open) }
+			where("status = 'placed'").for_each { |trd| trd.handle_open(btce_open) }
 		end
 	end
 
@@ -21,7 +22,7 @@ class Trade < ActiveRecord::Base
 #
 
 	#trade is created in decision.create_trade 
-	after_initialize do
+	def run()
 		@price_span 	= evaluate_price_span()
 		rel_span	= evaluate_rel_span(@price_span)
 		trade_amount = assess_trade_amount(rel_span)
@@ -92,6 +93,10 @@ class Trade < ActiveRecord::Base
 #  		!!!!! UNCOMMENTING THIS LINE WILL START ACTIVE TRADING !!!!!		
 #       ============================================================		
 #		trd = Btce::TradeAPI.new_from_keyfile.trade('btc_usd',type,@price_span[0][0],@price_span[0][1])
+		# trd = Btce::TradeAPI.new_from_keyfile.trade(['btc_usd','sell',400,0.001])
+ 	# 	puts "============================================"		
+		# puts "TRADE: #{trd}"
+ 	# 	puts "============================================"		
 # 		============================================================		
 # 		============================================================		
 
@@ -108,7 +113,7 @@ class Trade < ActiveRecord::Base
 
 		rv = trd['return']
 		if trd['success'] == 1
-			parms = {:status => 'placed',:foreign_id => "#{rv['order_id']}", :amount => @price_span[0][1]}
+			parms = {:status => 'placed',:foreign_id => "#{rv['order_id']}", :amount => @price_span[0][1], :price => @price_span[0][0]}
 			update_attributes(parms)
 
 			curr = (type == 'buy' ? 'usd' : 'btc')
@@ -119,7 +124,7 @@ class Trade < ActiveRecord::Base
 				new_bals = {:balance => old_bal - rv['received'], :on_hold => (old_hold || 0) + rv['received']}
 				wlt.update_attributes(new_bals)
 		else
-			parms = {:status => 'error',:foreign_id => "#{rv['order_id']}"}
+			parms = {:status => 'error',:foreign_id => trd['error']}
 			update_attributes(parms)
 		end
 	end
@@ -136,11 +141,13 @@ class Trade < ActiveRecord::Base
 	end
 
 	def has_filled()
+		puts 'order has filled'
 		update_attribute(:status, 'filled')
 		Wallet.create_or_update(user.id)
 	end
 
 	def cancel_order()
+		puts 'cancel order'
 		btce_cancel = Btce::TradeAPI.new_from_keyfile.cancel_order(foreign_id.to_i)
 		if btce_cancel['success'] == 1
 			rv = btce_cancel['return']['funds']
@@ -153,6 +160,7 @@ class Trade < ActiveRecord::Base
 	end
 
 	def partially_filled()
+		puts 'order partially filled'
 		# leave that for later
 	end
 end

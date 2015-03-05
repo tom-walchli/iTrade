@@ -14,4 +14,38 @@
  *= require_self
 */
 
+.left__bar {
+	background-color : #dddddd;
+	padding-top		: 80px;
+	height			: 100%;
+}
 
+.left__bar--header {
+	font-weight		: bold;
+	padding-top		: 20px;
+}
+
+.left__bar--trade_tr {
+	td {
+		padding-right : 10px;
+	}
+
+}
+.left__bar--scrollable {
+	height		: 400px;
+	overflow-x	:hidden;
+	overflow-y	:scroll;
+}
+
+.right__bar--item {
+	width	: 100px;
+}
+
+.result--item {
+	padding :	5px;
+}
+
+.result {
+	font-size : 14;
+	font-weight : bold;
+}

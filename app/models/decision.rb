@@ -42,6 +42,7 @@ class Decision < ActiveRecord::Base
 		parms[:exchange]		= 'btce'
 		parms[:amount_available]= (typ == 'buy' ? @usd_balance : @btc_balance)
 		parms[:status]			= 'decision'
-		Trade.create(parms)
+		trd = Trade.create(parms)
+		trd.run()
 	end
 end

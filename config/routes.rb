@@ -65,4 +65,7 @@ Rails.application.routes.draw do
     resources   :decisions
   end
 
+  post  '/users/:user_id/pending_trades'   =>    "trades#pending"
+
+
 end
