@@ -67,6 +67,8 @@ function updateDash(data){
 	$('.left__bar--scrollable').empty();
 	for (var key in data['trades']){
 		var t = data['trades'][key];
+		var mom = moment(t['updated_at']);
+		console.log(t['updated_at']);
      	var htmlParts = [
       				'<tr class="left__bar--trade_tr" id="trade_' + t['id'] + '">',
 						'<td class="left__bar--trade-type">' + t['type'] + '</td>',
@@ -76,7 +78,7 @@ function updateDash(data){
 							(t['price'] || 0).toFixed(3) ,
 						'</td>',
 						'<td>',
-							((Math.floor(Date.now()/1000) - t['updated_at']) / 60).toString() + 'm ago',
+							mom.fromNow(),
 						'</td>',
 					'</tr>'
 					]
@@ -86,23 +88,20 @@ function updateDash(data){
 	// results
 	var r = data['latest_eval'];
 	$('#js-buy__decision').text(r['buy']);
-	$('#js-buy__confidence').text(r['buy_confidence'].toFixed(3));
+	$('#js-buy__confidence').text(r['buy_confidence']); //.toFixed(3));
 	$('#js-sell__decision').text(r['sell']);
-	$('#js-sell__confidence').text(r['sell_confidence'].toFixed(3));
+	$('#js-sell__confidence').text(r['sell_confidence']); //.toFixed(3));
 }
 
 
-// d3.select("body").transition(3000)
-//     .style("background-color", '#dddddd');
+// d3.select("body").transition().duration(5000)
+//      .style("background-color", '#dddddd');
 
 var data = [4, 8, 15, 16, 23, 42];
 
 var x = d3.scale.linear()
     .domain([0, d3.max(data)])
     .range([0, 420]);
-
-var div = $('#playField');
-div.innerHtml = "Hello, world!";
 
 d3.select(".chart")
   .selectAll("div")
