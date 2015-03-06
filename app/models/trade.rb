@@ -11,8 +11,9 @@ class Trade < ActiveRecord::Base
 	def self.pending_trades()
 		btce_open = Btce::TradeAPI.new_from_keyfile.active_orders(['btc_usd'])
 		puts btce_open
-		if btce_open['success'] == 1
-			where("status = 'placed'").for_each { |trd| trd.handle_open(btce_open) }
+		# for now TradeAPI returns {success : 0, error : invalid key}
+		if btce_open['success'] == 1 || Decision.demo_mode()
+			where("status = 'placed'").each { |trd| trd.handle_open(btce_open) }
 		end
 	end
 
@@ -103,9 +104,9 @@ class Trade < ActiveRecord::Base
 #   	=========================		
 #		debug:
 		trd = {"success"=>1,"return"=>{
-								"received"=>0.1,
+								"received"=>amount,
 								"remains"=>0,
-								"order_id"=>0,
+								"order_id"=>12345678,
 								"funds"=>{"usd"=>325,"btc"=>2.498,"sc"=>121.998,"ltc"=>0,"ruc"=>0,"nmc"=>0}
 							}
 				}

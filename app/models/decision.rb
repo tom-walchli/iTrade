@@ -1,6 +1,16 @@
 class Decision < ActiveRecord::Base
 	belongs_to :user
 
+	# ============================
+	# ============================
+	@@DEMO_MODE = true
+
+	def self.demo_mode()
+		return @@DEMO_MODE
+	end
+	# ============================
+	# ============================
+
 	# decision is created in DecisionsController.create()
 	after_initialize do
 		@evals = AnnEval.where("updated_at < ?", Time.now).order('updated_at DESC').limit(3)
@@ -10,23 +20,36 @@ class Decision < ActiveRecord::Base
 	def make_decision()
 		@btc_balance = user.wallets.where("currency = 'btc'")[0].balance
 		@usd_balance = user.wallets.where("currency = 'usd'")[0].balance
+
 		e0 = @evals[0]
+		# ===================================
+		# ===================================
+		# DEMO_MODE
+		if @@DEMO_MODE
+			b = rand(100) % 2 == 0
+			s = rand(100) % 2 == 0
+			bc = rand
+			sc = rand
+			e0 = {:buy => b, :sell => s, :buy_confidence => bc, :sell_confidence => sc}			
+		end
+		# ===================================
+		# ===================================
 
 		if(@usd_balance > 0.01)
-			if (e0.buy == true && e0.sell == false) \
-				|| (e0.buy_confidence > 0.5 && e0.sell_confidence < 0.5)
+			if (e0[:buy] == true && e0[:sell] == false) \
+				|| (e0[:buy_confidence] > 0.5 && e0[:sell_confidence] < 0.5)
 				create_trade('buy')
 			end
 		end
 
 #  		====================
 #		debug:
-		create_trade('sell')
-		return
+#		create_trade('sell')
+#		return
 # 		====================
 		if (@btc_balance > 0.0001)
-			if (e0.sell == true && e0.buy == false) \
-				|| (e0.sell_confidence > 0.5 && e0.buy_confidence < 0.5)
+			if (e0[:sell] == true && e0[:buy] == false) \
+				|| (e0[:sell_confidence] > 0.5 && e0[:buy_confidence] < 0.5)
 				create_trade('sell')
 			end
 		end

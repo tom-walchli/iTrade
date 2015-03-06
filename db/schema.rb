@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150304050255) do
+ActiveRecord::Schema.define(version: 20150306073903) do
 
   create_table "ann_evals", force: :cascade do |t|
     t.text     "results"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20150304050255) do
     t.integer  "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text     "log"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|

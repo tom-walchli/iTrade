@@ -1,3 +1,74 @@
 // Place all the styles related to the decisions controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.row--results , .right__bar {
+	border-left : solid 5px #ffffff;	
+	border-right : solid 5px #ffffff;
+}
+
+.results--field {
+	height : 120px;
+	border-top 		: solid 10px  #ffffff;
+	border-bottom 	: solid 10px  #ffffff;
+	border-left 	: solid 5px  #ffffff;
+	border-right 	: solid 5px  #ffffff;
+
+	color: #ffffff;
+	text-align : center;
+	font-family : "Comic Sans MS", cursive, sans-serif;
+}
+
+.right--field {
+	height : 200px;
+	border-bottom 	: solid 10px  #ffffff;
+	border-right 	: solid 5px  #ffffff;
+	color: #ffffff;
+	font-family : "Comic Sans MS", cursive, sans-serif;
+	padding-left : 15px;
+}
+
+.right--btn {
+	margin-left : 0px;
+	margin-right : 0px;
+	height : 80px;
+	width : 100%;
+	font-size : 25pt;
+	font-family : "Comic Sans MS", cursive, sans-serif;
+}
+
+.right__bar {
+	background-color : #ffffff;
+	height : 100%;
+	padding-right : 0;
+	padding-left : 0;
+	margin-right : 0;
+	margin-left : 0;
+}
+
+.right__field--balance {
+	font-size : 25pt;
+	padding-left : 20px;
+}
+
+.right__field--currency {
+	font-size : 15pt;	
+}
+
+.in_transaction{
+	font-size : 10pt;
+	padding-left : 30px;
+}
+
+.trades {
+	background-color : #ffffff;	
+}
+
+.log {
+	height : 340px;
+	padding-bottom : 20px;
+	padding-top : 20px;
+	padding-left : 10px;
+	padding-right : 10px;
+	background-color : #ffffff;
+}

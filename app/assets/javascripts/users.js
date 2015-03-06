@@ -5,14 +5,30 @@ var beatBtn = $('#toggleBeating');
 $(beatBtn).click(function(){
 	beating = !beating;
 	var t = beatBtn.text();
-	beatBtn.text(t === "Start" ? "Stop" : "Start")
+	beatBtn.text(t === "Trade!" ? "Stop!" : "Trade!")
+	if ($(beatBtn).hasClass('btn-danger')){
+		$(beatBtn).removeClass('btn-danger')
+		$(beatBtn).addClass('btn-success')
+	} else {
+		$(beatBtn).removeClass('btn-success')
+		$(beatBtn).addClass('btn-danger')
+	}
 	heartbeat();
 })
 
-// $(document).ready(function (event){
-// 	beating = true
-// 	heartbeat();
-// });
+$(document).ready(function (event){
+	waitingForUser();
+});
+
+function waitingForUser(){
+	if (user_id){
+		beating = true
+		return heartbeat()
+	} 
+	setTimeout(function(){
+		waitingForUser()
+	},100);
+}
 
 function heartbeat(){
 	if (beating){
@@ -34,7 +50,6 @@ function keepAlive(){
 function makeDecision(){
 	var request = $.post('/users/' + user_id + '/decisions')
 	request.done(function(data){
-//    	console.log(data);
 		updateDash(data);
 	});
 	request.fail(function(data){
@@ -56,57 +71,59 @@ function checkOpenTrades(){
 
 function updateDash(data){
 	console.log("data: ", data);
+
 	// wallets
 	for (var key in data['wallets']){
 		var wlt = data['wallets'][key];
 		var curr = wlt['currency'];
-		$('#wallet_'+curr).text(wlt['balance']);
+		$('#wallet_'+curr).text(wlt['balance'].toFixed( curr === 'usd' ? 2 : 4 ));
+		$('#wallet_hold_'+curr).text('(in transaction: ' + wlt['on_hold'].toFixed( curr === 'usd' ? 2 : 4 ) + ')');
 	}
 
 	// trades
-	$('.left__bar--scrollable').empty();
+	$('.trades--scrollable tbody').empty();
 	for (var key in data['trades']){
 		var t = data['trades'][key];
-		var mom = moment(t['updated_at']);
-		console.log(t['updated_at']);
+		var created = moment(t['created_at']);
+		var updated = moment(t['updated_at']);
      	var htmlParts = [
       				'<tr class="left__bar--trade_tr" id="trade_' + t['id'] + '">',
-						'<td class="left__bar--trade-type">' + t['type'] + '</td>',
-						'<td class="left__bar--amount">', 
-							t['amount'].toFixed(3) ,
-							'at',
-							(t['price'] || 0).toFixed(3) ,
-						'</td>',
-						'<td>',
-							mom.fromNow(),
-						'</td>',
+						'<td>' + created.format() + '</td>' ,
+						'<td>' + t['status'] + '</td>',
+						'<td>' + t['type'] + '</td>',
+						'<td>' + t['amount'].toFixed(3) + '</td>' ,
+						'<td>' + (t['price'] || 0).toFixed(3) + '</td>' ,
+						'<td>' + updated.fromNow() + '</td>',
 					'</tr>'
 					]
-      $('.left__bar--scrollable').append(htmlParts.join('\n'))
+      $('.trades--scrollable tbody').append(htmlParts.join('\n'))
 	}
 
 	// results
 	var r = data['latest_eval'];
-	$('#js-buy__decision').text(r['buy']);
-	$('#js-buy__confidence').text(r['buy_confidence']); //.toFixed(3));
-	$('#js-sell__decision').text(r['sell']);
-	$('#js-sell__confidence').text(r['sell_confidence']); //.toFixed(3));
+	var bc = Math.round(Math.log(r['buy_confidence']) * 5 + 100);
+	if (bc < 0) bc = 0;
+	var sc = Math.round(Math.log(r['sell_confidence']) * 5 + 100);
+	if (sc < 0) sc = 0;
+	$('#js-buy__decision').text(r['buy']==true?'Yes':'No');
+	$('#js-buy__confidence').text(bc); 
+	$('#js-sell__decision').text(r['sell']==true?'Yes':'No');
+	$('#js-sell__confidence').text(sc); 
 }
 
+d3.select("body").transition().duration(5000)
+      .style("background-color", '#666666');
 
-// d3.select("body").transition().duration(5000)
-//      .style("background-color", '#dddddd');
+// var data = [4, 8, 15, 16, 23, 42];
 
-var data = [4, 8, 15, 16, 23, 42];
+// var x = d3.scale.linear()
+//     .domain([0, d3.max(data)])
+//     .range([0, 420]);
 
-var x = d3.scale.linear()
-    .domain([0, d3.max(data)])
-    .range([0, 420]);
-
-d3.select(".chart")
-  .selectAll("div")
-    .data(data)
-  .enter().append("div")
-    .style("width", function(d) { return x(d) + "px"; })
-    .text(function(d) { return d; });
+// d3.select(".chart")
+//   .selectAll("div")
+//     .data(data)
+//   .enter().append("div")
+//     .style("width", function(d) { return x(d) + "px"; })
+//     .text(function(d) { return d; });
 

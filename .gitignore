@@ -14,4 +14,4 @@
 
 #ignore all key files
 *key.*
-
+secrets*
